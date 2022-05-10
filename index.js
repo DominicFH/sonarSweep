@@ -1,24 +1,37 @@
 const fs = require("fs");
 
-const data = fs.readFileSync("./input.txt", "utf-8");
+const data = fs.readFileSync("./input.txt", "utf-8").split("\n");
 
-const inputData = data.split("\n");
+const createMeasurementWindows = (rawData) => {
+	const output = [];
+	let lastWindowIndex = 2;
 
-const sonarSweep = (input) => {
-	const numberfiedMeasurements = input.map((measurement) => {
-		return +measurement;
-	});
+	while (lastWindowIndex <= rawData.length - 1) {
+		const valueOne = +rawData[lastWindowIndex - 2];
+		const valueTwo = +rawData[lastWindowIndex - 1];
+		const valueThree = +rawData[lastWindowIndex];
+		output.push(valueOne + valueTwo + valueThree);
+		lastWindowIndex++;
+	}
+	return output;
+};
 
+const sonarSweep = (summedMeasurementWindows) => {
 	let increaseCount = 0;
-	numberfiedMeasurements.forEach((currentMeasurement, index) => {
+
+	summedMeasurementWindows.forEach((currentMeasurementSum, index) => {
 		if (index > 0) {
-			prevMeasurement = numberfiedMeasurements[index - 1];
-			if (currentMeasurement > prevMeasurement) {
+			const prevMeasurementSum = summedMeasurementWindows[index - 1];
+			if (currentMeasurementSum > prevMeasurementSum) {
 				increaseCount += 1;
 			}
 		}
 	});
+
 	return increaseCount;
 };
 
-module.exports = sonarSweep;
+const summedWindows = createMeasurementWindows(data);
+console.log(sonarSweep(summedWindows));
+
+module.exports = { sonarSweep, createMeasurementWindows };
